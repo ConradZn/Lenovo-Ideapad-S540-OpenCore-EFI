@@ -3,7 +3,7 @@
 <img width="1344" height="756" alt="Snímek obrazovky 2026-11-22 v 20 23 33" src="https://github.com/user-attachments/assets/d8b4a400-fd95-406d-af3e-b06e6e1a40bb" />
 
 ![macOS](https://img.shields.io/badge/macOS-Tahoe%2026.x-black?style=for-the-badge&logo=apple)
-![OpenCore](https://img.shields.io/badge/OpenCore-1.0.7-blue?style=for-the-badge)
+![OpenCore](https://img.shields.io/badge/OpenCore-1.0.8-blue?style=for-the-badge)
 ![Image](https://img.shields.io/badge/Installer-Olarila%20Vanilla%20Tahoe-orange?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Stable-brightgreen?style=for-the-badge)
 
