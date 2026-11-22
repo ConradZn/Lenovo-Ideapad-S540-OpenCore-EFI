@@ -1,48 +1,89 @@
-## Overview
+# Lenovo IdeaPad S540 OpenCore EFI (macOS Tahoe 26.x)
 
-- **Current OS:** macOS Sequoia
-- **OpenCore Version:** 1.0.7
-- **SMBIOS:** MacBookPro15,2
+<img width="1344" height="756" alt="Snímek obrazovky 2026-11-22 v 20 23 33" src="https://github.com/user-attachments/assets/d8b4a400-fd95-406d-af3e-b06e6e1a40bb" />
 
-## Hardware Configuration
+![macOS](https://img.shields.io/badge/macOS-Tahoe%2026.x-black?style=for-the-badge&logo=apple)
+![OpenCore](https://img.shields.io/badge/OpenCore-1.0.7-blue?style=for-the-badge)
+![Image](https://img.shields.io/badge/Installer-Olarila%20Vanilla%20Tahoe-orange?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Stable-brightgreen?style=for-the-badge)
+
+Custom **OpenCore 1.0.8** EFI configuration tailored for the **Lenovo IdeaPad S540** (Whiskey Lake / Ice Lake iGPU `00009B3E`), installed using the **Olarila Vanilla macOS Tahoe** image and tuned with custom CPU power management (`CPUFriend`), updated ACPI `SSDT` patches, and **OCLP-Mod** for Intel Wi-Fi.
+
+---
+
+## 📋 Changelog & Updates (Tahoe Release)
+
+- **Clean Tahoe Installation:** Installed using the **Olarila Vanilla macOS Tahoe** image paired with this custom OpenCore 1.0.8 EFI (without using the generic prebuilt Olarila EFI).
+- **SMBIOS Migration:** Migrated SMBIOS to `MacBookPro16,2` for native macOS Tahoe compatibility without requiring `revpatch=sbvmm`.
+- **OpenCore Updated:** Upgraded bootloader and core Acidanthera kexts to **OpenCore 1.0.8**.
+- **CPU Power Management (`CPUFriend`):** Added `CPUFriend.kext` + custom `CPUFriendDataProvider.kext` (EPP `0x40` Balanced Performance, PerfBias `0x05`, LFM `800 MHz`) to match Windows 11 responsiveness and Turbo Boost behavior.
+- **Updated ACPI / SSDT Tables:** Rebuilt and cleaned up `SSDT` patches (`SSDT-PLUG`, `SSDT-EC-USBX`, `SSDT-AWAC`, `SSDT-GPI0`, `SSDT-PNLF`) for clean XCPM initialization, I2C trackpad interrupts, and backlight control.
+- **Intel Wi-Fi & Sound Fix:** Patched Intel Wireless via **OCLP-Mod** and resolved onboard audio cleanly via native `AppleALC.kext` (`alcid=11` / `alcid=21`) to avoid `AppleHDA` boot loops.
+
+---
+
+## 💻 Hardware Specifications
 
 | Component | Specification | Status |
 | :--- | :--- | :--- |
-| **CPU** | Intel Core i3-8145U | Working |
-| **GPU** | Intel UHD Graphics 620 | Working |
-| **RAM** | DDR4 Dual-Channel | Working |
-| **Audio** | Realtek ALC | Working |
-| **Wi-Fi / BT** | Intel Wireless | Working |
-| **Trackpad** | I2C Multi-touch | Working |
+| **Model** | Lenovo IdeaPad S540 | ✅ Supported |
+| **CPU** | Intel Core i5 / i7 (Whiskey Lake / Ice Lake) | ✅ Full XCPM + CPUFriend |
+| **iGPU** | Intel UHD Graphics (`00009B3E` / `1536–2048 MB` VRAM) | ✅ Full Metal Acceleration |
+| **Audio** | Realtek ALC257 / ALC236 (`AppleALC.kext` sound fix) | ✅ Working (`alcid=11` / `21`) |
+| **Wi-Fi & Bluetooth** | Intel Wireless (`OCLP-Mod` + `IntelBluetoothFirmware`) | ✅ Working |
+| **Trackpad** | I2C Precision Touchpad (`VoodooI2C` + `VoodooI2CHID`) | ✅ Gestures & Polling/Interrupt |
+| **Keyboard** | PS/2 Internal Keyboard (`VoodooPS2Controller`) | ✅ Working |
+| **Sleep / Wake** | Hibernation disabled, S3/Modern Standby patched | ✅ Working |
+| **SMBIOS** | `MacBookPro16,2` | ✅ Native Tahoe Support |
 
 ---
 
-## What is Working
+## 📂 EFI Structure (`ACPI` & `Kexts`)
 
-*   Graphics Acceleration with full Metal support
-*   Audio output & Microphone input
-*   Wi-Fi & Bluetooth with native handover
-*   Full Trackpad gestures via I2C
-*   Battery status management
-*   Sleep, Wake, and Power Management
+### ACPI (`EFI/OC/ACPI/`)
+- `SSDT-AWAC.aml` — System clock compatibility patch
+- `SSDT-EC-USBX.aml` — Embedded Controller & USB power injection
+- `SSDT-GPI0.aml` — Enables GPIO controller for smooth `VoodooI2C` trackpad operation
+- `SSDT-PLUG.aml` — Enables native Intel `X86PlatformPlugin` CPU power management
+- `SSDT-PNLF.aml` — Native macOS brightness slider & backlight control
 
-## What is Not Working
-
-*   None so far everything is stable
+### Kexts (`EFI/OC/Kexts/`)
+- `Lilu.kext` — Core patching engine
+- `VirtualSMC.kext` (+ `SMCProcessor.kext`, `SMCBatteryManager.kext`, `SMCSuperIO.kext`) — SMC emulation & sensors
+- `CPUFriend.kext` — Dynamic CPU power management injector
+- `CPUFriendDataProvider.kext` — Custom frequency & EPP (`0x40`) profile for Lenovo S540
+- `WhateverGreen.kext` — iGPU framebuffer & Metal acceleration patches
+- `AppleALC.kext` — Native audio codec sound fix (`alcid=11` or `alcid=21` in `boot-args`)
+- `VoodooPS2Controller.kext` — Internal keyboard support
+- `VoodooI2C.kext` + `VoodooI2CHID.kext` — Precision trackpad & multi-touch gestures
+- `IntelBluetoothFirmware.kext` + `IntelBTPatcher.kext` + `BlueToolFixup.kext` — Bluetooth stack for Tahoe
+- `NVMeFix.kext` — Improved NVMe SSD power management & thermal efficiency
+- `USBMap.kext` — Custom USB port mapping for `MacBookPro16,2`
 
 ---
 
-## Setup Instructions
+## 🚀 Installation & Post-Install Setup (macOS Tahoe)
 
-### 1. BIOS Settings
+### 1. Prepare Installer & SMBIOS
+1. Flash the **Olarila Vanilla Image (macOS Tahoe)** onto a USB drive and replace its default EFI partition with this custom **OpenCore 1.0.7** `EFI` folder.
+2. Open `EFI/OC/config.plist` in **ProperTree** or **OpenCore Auxiliary Tools (OCAT)** and generate unique serial numbers under `PlatformInfo -> Generic` for **`MacBookPro16,2`**:
+   - `SystemSerialNumber`
+   - `MLB`
+   - `SystemUUID`
+   - `ROM`
 
-Ensure these values are configured before booting
+### 2. Enable Intel Wi-Fi & Sound Fix (OCLP-Mod + AppleALC)
+1. Boot into macOS Tahoe and open **OCLP-Mod**.
+2. Click **Post-Install Root Patch** and apply **only the Networking / Intel Wi-Fi patch**.
+3. ⚠️ **Important (Sound Fix):** Do **NOT** apply the `AppleHDA` audio root patch inside OCLP-Mod — it conflicts with `AppleALC.kext` and causes a boot loop. Onboard audio is already fixed natively via `AppleALC.kext` (`alcid=11` or `alcid=21`).
 
-*   **Disable:** Secure Boot, Intel SGX
-*   **Enable:** Intel Virtualization Technology, SATA Mode: AHCI, DVMT Pre-Allocated: 64M/128M
+---
 
-### 2. Post-Installation
+## 🛠️ Recovery Troubleshooting (If Root Patch Breaks Boot)
 
-> ⚠️ **IMPORTANT:** You MUST generate your own SMBIOS data (Serial Number, UUID, MLB, ROM) using GenSMBIOS before logging into iCloud services
+If an OCLP-Mod root patch causes a boot loop, boot into **macOS Recovery**, open **Terminal**, and revert to the last sealed Apple APFS snapshot:
 
-Enjoy your native macOS Sequoia experience on the S540
+```bash
+mount -uw "/Volumes/Macintosh HD"
+bless --mount "/Volumes/Macintosh HD" --bootefi --last-sealed-snapshot
+reboot![Uploading Snímek obrazovky 2026-11-22 v 20.23.33.png…]()
