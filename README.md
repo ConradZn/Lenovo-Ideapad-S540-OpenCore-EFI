@@ -27,9 +27,9 @@ Custom **OpenCore 1.0.8** EFI configuration tailored for the **Lenovo IdeaPad S5
 | Component | Specification | Status |
 | :--- | :--- | :--- |
 | **Model** | Lenovo IdeaPad S540 | ✅ Supported |
-| **CPU** | Intel Core i5 / i7 (Whiskey Lake / Ice Lake) | ✅ Full XCPM + CPUFriend |
+| **CPU** | Intel Core i3 / i5 / i7 (Whiskey Lake / Ice Lake) | ✅ Full XCPM + CPUFriend |
 | **iGPU** | Intel UHD Graphics (`00009B3E` / `1536–2048 MB` VRAM) | ✅ Full Metal Acceleration |
-| **Audio** | Realtek ALC257 / ALC236 (`AppleALC.kext` sound fix) | ✅ Working (`alcid=11` / `21`) |
+| **Audio** | Realtek ALC257 / ALC236 (`AppleALC.kext` sound fix) | ✅ Working |
 | **Wi-Fi & Bluetooth** | Intel Wireless (`OCLP-Mod` + `IntelBluetoothFirmware`) | ✅ Working |
 | **Trackpad** | I2C Precision Touchpad (`VoodooI2C` + `VoodooI2CHID`) | ✅ Gestures & Polling/Interrupt |
 | **Keyboard** | PS/2 Internal Keyboard (`VoodooPS2Controller`) | ✅ Working |
