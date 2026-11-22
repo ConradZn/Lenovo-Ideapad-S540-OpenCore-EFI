@@ -62,28 +62,42 @@ Custom **OpenCore 1.0.8** EFI configuration tailored for the **Lenovo IdeaPad S5
 
 ---
 
-## 🚀 Installation & Post-Install Setup (macOS Tahoe)
+## 🚀 USB Creation & Installation Guide (Windows)
 
-### 1. Prepare Installer & SMBIOS
-1. Flash the **Olarila Vanilla Image (macOS Tahoe)** onto a USB drive and replace its default EFI partition with this custom **OpenCore 1.0.7** `EFI` folder.
-2. Open `EFI/OC/config.plist` in **ProperTree** or **OpenCore Auxiliary Tools (OCAT)** and generate unique serial numbers under `PlatformInfo -> Generic` for **`MacBookPro16,2`**:
-   - `SystemSerialNumber`
-   - `MLB`
-   - `SystemUUID`
-   - `ROM`
+### 1. Download & Flash the RAW Image
+1. Download the **Olarila Vanilla RAW Image (macOS Tahoe)**.
+2. Open **balenaEtcher**, select the downloaded `.raw` image, choose your USB flash drive, and click **Flash!**.
 
-### 2. Enable Intel Wi-Fi & Sound Fix (OCLP-Mod + AppleALC)
-1. Boot into macOS Tahoe and open **OCLP-Mod**.
-2. Click **Post-Install Root Patch** and apply **only the Networking / Intel Wi-Fi patch**.
-3. ⚠️ **Important (Sound Fix):** Do **NOT** apply the `AppleHDA` audio root patch inside OCLP-Mod — it conflicts with `AppleALC.kext` and causes a boot loop. Onboard audio is already fixed natively via `AppleALC.kext` (`alcid=11` or `alcid=21`).
+### 2. Partition Setup (MiniTool Partition Wizard)
+1. Open **MiniTool Partition Wizard** on Windows and locate your flashed USB drive.
+2. Right-click the small **EFI** partition on the USB drive, select **Change Letter**, and assign it a drive letter (e.g., **`F:`**).
+3. Select the remaining unallocated space on the USB drive, click **Create**, format it as **exFAT** or **NTFS**, and label it **`OpenCore`**.
+4. Click **Apply** in the top-left corner to save the partition changes.
+
+### 3. Copy Custom EFI & OCLP-Mod Tools
+1. Download **Explorer++**, right-click it, and select **Run as administrator**.
+2. Open your newly assigned EFI drive (**`F:\`**), delete the existing `EFI` folder if present, and paste the **`EFI`** folder from this repository into **`F:\`**.
+3. Open `F:\EFI\OC\config.plist` in **ProperTree** or **OpenCore Auxiliary Tools (OCAT)** and generate unique SMBIOS values under `PlatformInfo -> Generic` for **`MacBookPro16,2`** (`SystemSerialNumber`, `MLB`, `SystemUUID`, `ROM`).
+4. Open the **`OpenCore`** partition you created on the USB drive and copy the **OCLP-Mod** installer/app inside it so you have it ready offline after macOS installs.
 
 ---
 
-## 🛠️ Recovery Troubleshooting (If Root Patch Breaks Boot)
+## 🛠️ Post-Install Setup (Wi-Fi, Audio & Updates)
 
-If an OCLP-Mod root patch causes a boot loop, boot into **macOS Recovery**, open **Terminal**, and revert to the last sealed Apple APFS snapshot:
+### Patch Intel Wi-Fi & Audio via OCLP-Mod
+1. Boot from the USB drive, install **macOS Tahoe** onto your SSD, and complete the initial setup.
+2. Open the **`OpenCore`** partition on your USB drive, copy **OCLP-Mod** to `/Applications`, and launch it.
+3. Run **Post-Install Root Patch** and apply the **Intel Wi-Fi** patch first, then **reboot**.
+4. After rebooting, connect to your Wi-Fi network, open **OCLP-Mod** again, download the required support files, and apply the **Sound Fix** patch, then **reboot**.
+
+---
+
+## 🆘 Recovery Troubleshooting (If Boot Hangs After Patching)
+
+1. **First step — Reset NVRAM:** Reboot into the OpenCore boot picker, select **Reset NVRAM** (press `Spacebar` if hidden), and boot macOS again.
+2. **If a root patch still causes a boot loop:** Boot into **macOS Recovery**, open **Utilities → Terminal**, and revert to the last sealed Apple APFS snapshot:
 
 ```bash
 mount -uw "/Volumes/Macintosh HD"
 bless --mount "/Volumes/Macintosh HD" --bootefi --last-sealed-snapshot
-reboot![Uploading Snímek obrazovky 2026-11-22 v 20.23.33.png…]()
+reboot
