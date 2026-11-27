@@ -82,7 +82,7 @@ Custom **OpenCore 1.0.8** EFI configuration tailored for the **Lenovo IdeaPad S5
 ## 🚀 USB Creation & Installation Guide (Windows)
 
 ### 1. Download & Flash the RAW Image
-1. Download the **Olarila Vanilla RAW Image (macOS Tahoe)**.
+1. Download the **Olarila Vanilla RAW Image (macOS Tahoe)**. Here: https://www.mediafire.com/file_premium/zni17vl0io4k7t1/Olarila_Tahoe_26.7.1.raw/file?action=check
 2. Open **balenaEtcher**, select the downloaded `.raw` image, choose your USB flash drive, and click **Flash!**.
 
 ### 2. Partition Setup (MiniTool Partition Wizard)
